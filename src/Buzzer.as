@@ -11,6 +11,8 @@ package
 		[Embed(source = '../assets/buzzer.png')] private var buzzerPNG:Class;
 		
 		public var isDying:Boolean = false;
+		public var flighttime:Number = 0;
+		public var spin:int;
 		
 		public function Buzzer(x:int, y:int)
 		{
@@ -23,8 +25,11 @@ package
 			addAnimation("walk", [0, 1], 6, true);
 			play("walk");
 			
-			acceleration.y = 50;
+			acceleration.y -= 1;
 			velocity.x = 30;
+			
+			spin = 0;
+			flighttime = 0;
 		}
 		
 		override public function kill():void
@@ -49,6 +54,10 @@ package
 		override public function update():void
 		{
 			super.update();
+			x--;
+			flighttime++;
+			spin = ((flighttime * 3.0) % (2 * 3.14));
+			velocity.y += Math.sin (spin) * 25;
 			
 			//	Check the tiles on the left / right of it
 			

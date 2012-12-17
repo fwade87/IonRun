@@ -109,6 +109,7 @@ package
 			_hazards = new FlxGroup();
 			_hazards.add(level.slimes);
 			_hazards.add(level.buzzers);
+			
 			_objects = new FlxGroup();
 			_objects.add(debris);
 			_objects.add(scrapDrops);
@@ -121,15 +122,14 @@ package
 		{
 			super.update();
 			
-			FlxG.collide(player, _objects);
 			FlxG.collide(player, level);
 			FlxG.collide(_hazards, level);
 			FlxG.collide(_objects, level);
-			FlxG.collide(_hazards, _hazards, enemyCollideHit);
 			
 			FlxG.overlap(player, level.slimes, hitSlime);
 			FlxG.overlap(player, level.buzzers, hitBuzzer);
 			FlxG.overlap(player, level.waxes, hitWax);
+			FlxG.overlap(player, scrapDrops, scrapHit);
 			
 			
 			//	Player walked through end of level exit?
@@ -148,25 +148,7 @@ package
 		
 		//COLLISION EFFECTS 
 		
-		
-		//enemy collide hit
-		private function enemyCollideHit(slime:FlxSprite, buzzer:FlxSprite):void
-		{
-			if (slime.facing == FlxObject.RIGHT)
-			{
-				slime.facing = FlxObject.LEFT;
-				
-				slime. velocity.x = -30;
-			}
-			else
-			{
-				slime.facing = FlxObject.RIGHT;
-				
-				slime.velocity.x = 30;
-			}
-				
-		}
-		
+	
 		//SLIMES
 		private function hitSlime(player:FlxObject, slime:FlxSprite):void
 		{
@@ -184,13 +166,14 @@ package
 				enemyHitFX.play(true);
 				scrapDrops = new FlxSprite(slime.x, slime.y, scrapPNG);
 				_objects.add(scrapDrops);
-				scrapDrops.y += -15;
+				scrapDrops.y += -75;
 				scrapDrops.velocity.y += 130;
 				add(scrapDrops);
 			}
 			else
 			{
 				deathHitFX.play(true);
+
 				Player(player).restart();
 			}
 		}
@@ -214,13 +197,14 @@ package
 				enemyHitFX.play(true);
 				scrapDrops = new FlxSprite(buzzer.x, buzzer.y, scrapPNG);
 				_objects.add(scrapDrops);
-				scrapDrops.y += -15;
+				scrapDrops.y += -75;
 				scrapDrops.velocity.y += 130;
 				add(scrapDrops);
 			}
 			else
 			{
 				deathHitFX.play(true);
+
 				Player(player).restart();
 			}
 		}
@@ -228,14 +212,10 @@ package
 		//Scrap Drops
 		private function scrapHit(player:FlxObject, scrapDrops:FlxSprite):void
 		{
-				if (player.y < scrapDrops.y)
-				{
-					scrapDrops.flicker(3);
-					
-					scrapDrops.kill();
-					enemyHitFX.play(true);
-					scrapScore.text += 1;
-				}
+				enemyHitFX.play(true);
+				scrapScore.text += 1;
+				
+				scrapDrops.kill();
 		}
 		
 		//WAXES
