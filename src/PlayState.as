@@ -5,6 +5,7 @@ package
 	//**
 	//**
 	
+	import flash.sampler.NewObjectSample;
 	import org.flixel.*;
 	import org.flixel.plugin.photonstorm.FlxDelay;
 	
@@ -13,6 +14,7 @@ package
 		//sound fxs and music and gfx
 		[Embed(source = "../assets/sfx/waxhit1.mp3")] private var waxFX:Class;
 		[Embed(source = "../assets/sfx/enemyhit1.mp3")] private var enemyFX:Class;
+		[Embed(source = "../assets/sfx/death.mp3")] private var deathFX:Class;
 		[Embed(source = "../assets/drop1.png")] private var scrapPNG:Class;
 
 		//main game vars
@@ -31,6 +33,15 @@ package
 		//soundfx
 		private var waxHitFX:FlxSound;
 		private var enemyHitFX:FlxSound;
+		private var deathHitFX:FlxSound;
+		
+		//enemies
+		public var slimeMob:Slime;
+		public var buzzerMob:Buzzer;
+		
+		//meta groups, to help speed up collisions
+		protected var _objects:FlxGroup;
+		protected var _hazards:FlxGroup;
 		
 		public function PlayState() 
 		{
@@ -44,11 +55,14 @@ package
 			waxHitFX = new FlxSound;
 			waxHitFX.loadEmbedded(waxFX);
 			
+			deathHitFX = new FlxSound;
+			deathHitFX.loadEmbedded(deathFX);
+			
 			enemyHitFX = new FlxSound;
 			enemyHitFX.loadEmbedded(enemyFX);
 	
 			//player
-			player = new Player(4, 120);
+			player = new Player(20, 90);
 
 			debris = new Debris;
 			//score stuff
@@ -88,7 +102,18 @@ package
 			
 			//Debugger Watch examples
 			FlxG.watch(player,"x");
-			FlxG.watch(player,"y");
+			FlxG.watch(player, "y");
+			
+			//Finally we are going to sort things into a couple of helper groups.
+			//We don't add these groups to the state, we just use them for collisions later!
+			_hazards = new FlxGroup();
+			_hazards.add(level.slimes);
+			_hazards.add(level.buzzers);
+			_objects = new FlxGroup();
+			_objects.add(debris);
+			_objects.add(scrapDrops);
+			_objects.add(level.waxes);
+			
 			
 		}
 		//main update for collision!
@@ -96,10 +121,11 @@ package
 		{
 			super.update();
 			
+			FlxG.collide(player, _objects);
 			FlxG.collide(player, level);
-			FlxG.collide(level.slimes, level);
-			FlxG.collide(level.buzzers, level);
-			FlxG.collide(scrapDrops, level);
+			FlxG.collide(_hazards, level);
+			FlxG.collide(_objects, level);
+			FlxG.collide(_hazards, _hazards, enemyCollideHit);
 			
 			FlxG.overlap(player, level.slimes, hitSlime);
 			FlxG.overlap(player, level.buzzers, hitBuzzer);
@@ -122,6 +148,25 @@ package
 		
 		//COLLISION EFFECTS 
 		
+		
+		//enemy collide hit
+		private function enemyCollideHit(slime:FlxSprite, buzzer:FlxSprite):void
+		{
+			if (slime.facing == FlxObject.RIGHT)
+			{
+				slime.facing = FlxObject.LEFT;
+				
+				slime. velocity.x = -30;
+			}
+			else
+			{
+				slime.facing = FlxObject.RIGHT;
+				
+				slime.velocity.x = 30;
+			}
+				
+		}
+		
 		//SLIMES
 		private function hitSlime(player:FlxObject, slime:FlxSprite):void
 		{
@@ -132,18 +177,20 @@ package
 			
 			if (player.y < slime.y)
 			{
-				debris.explodeEnemy(slime.x, slime.y);
+				debris.createEmitter(slime.x, slime.y);
 
 				player.velocity.y *= -1;
 				slime.kill();
 				enemyHitFX.play(true);
 				scrapDrops = new FlxSprite(slime.x, slime.y, scrapPNG);
+				_objects.add(scrapDrops);
 				scrapDrops.y += -15;
 				scrapDrops.velocity.y += 130;
 				add(scrapDrops);
 			}
 			else
 			{
+				deathHitFX.play(true);
 				Player(player).restart();
 			}
 		}
@@ -158,19 +205,22 @@ package
 			
 			if (player.y < buzzer.y)
 			{
-				debris.explodeEnemy(buzzer.x, buzzer.y);
 				
+				debris.createEmitter(buzzer.x, buzzer.y);
+
 				
 				player.velocity.y *= -1;
 				buzzer.kill();
 				enemyHitFX.play(true);
 				scrapDrops = new FlxSprite(buzzer.x, buzzer.y, scrapPNG);
+				_objects.add(scrapDrops);
 				scrapDrops.y += -15;
 				scrapDrops.velocity.y += 130;
 				add(scrapDrops);
 			}
 			else
 			{
+				deathHitFX.play(true);
 				Player(player).restart();
 			}
 		}

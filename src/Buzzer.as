@@ -15,7 +15,7 @@ package
 		public function Buzzer(x:int, y:int)
 		{
 			super(x * 16, y * 16);
-
+			
 			loadGraphic(buzzerPNG, true, true, 16, 16);
 			
 			facing = FlxObject.RIGHT;

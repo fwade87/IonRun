@@ -10,28 +10,34 @@ package
 		
 		public function Debris() 
 		{
-					super();
-				_explodes = new FlxGroup();	
-				
+			super();
+			_explodes = new FlxGroup();	
+
+		}
+		
+		public function createEmitter(xa:int, ya:int):FlxEmitter 
+		{
+		
 					//	Pixel Explosion
-				 var emitter:FlxEmitter = recycle(FlxEmitter) as FlxEmitter;
-				 _explodes.add(emitter);
-				 emitter.maxRotation = 0;
-				 emitter.gravity = 1000;
-				 emitter.setXSpeed( -100, 100);
-				 emitter.setYSpeed( -500, 100);
-				 emitter.makeParticles(bitsPNG,50,12,true,0);         
-				 add(emitter);
-				
+					
+
+			 var emitter:FlxEmitter = recycle(FlxEmitter) as FlxEmitter;
+			 _explodes.add(emitter);
+			 emitter.maxRotation = 0;
+			 emitter.gravity = 1000;
+			 emitter.setXSpeed( -100,30);
+			 emitter.setYSpeed( -100,100);
+			 emitter.makeParticles(bitsPNG, 10,16,true,1); 
+			 emitter.x = xa;
+			 emitter.y = ya;
+			 add(emitter);
+
+			emitter.start(true,1);
+			add(emitter);
+			return emitter;
 		}
 	
-		public function explodeEnemy(xa:int, ya:int):void
-		{
-			var emitter:FlxEmitter = recycle(FlxEmitter) as FlxEmitter;
-			xa = emitter.x;
-			ya = emitter.y;
-			emitter.start(true, 3,0.5,0);
-		}
+
 	}
 
 }

@@ -72,6 +72,7 @@ package
 			slimes = new Enemies;
 			
 			slimes.addSlime(11, 16);
+			slimes.addSlime(15, 16);
 			slimes.addSlime(31, 16);
 			slimes.addSlime(28, 16);
 			slimes.addSlime(74, 16);

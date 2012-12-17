@@ -6,11 +6,11 @@ package src
 	public class Level_ extends 
 	{
 		//Embedded media...
-		[Embed(source="../assets/mapCSV_Level1_Sky.csv", mimeType="application/octet-stream")] public var CSV_Level1Sky:Class;
-		[Embed(source="../assets/backdrop.png")] public var Img_Level1Sky:Class;
-		[Embed(source="../assets/mapCSV_Level1_Map.csv", mimeType="application/octet-stream")] public var CSV_Level1Map:Class;
-		[Embed(source="../assets/tiles.png")] public var Img_Level1Map:Class;
-		[Embed(source="../assets/mapCSV_Level1_Wax.csv", mimeType="application/octet-stream")] public var CSV_Level1Wax:Class;
+		[Embed(source="../mapCSV_Level1_Sky.csv", mimeType="application/octet-stream")] public var CSV_Level1Sky:Class;
+		[Embed(source="../backdrop.png")] public var Img_Level1Sky:Class;
+		[Embed(source="../mapCSV_Level1_Map.csv", mimeType="application/octet-stream")] public var CSV_Level1Map:Class;
+		[Embed(source="../tiles.png")] public var Img_Level1Map:Class;
+		[Embed(source="../mapCSV_Level1_Wax.csv", mimeType="application/octet-stream")] public var CSV_Level1Wax:Class;
 		[Embed(source="star.png")] public var Img_Level1Wax:Class;
 
 		//Tilemaps
