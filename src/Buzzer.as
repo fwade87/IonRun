@@ -4,6 +4,7 @@ package
 	import com.greensock.TweenMax;
 	import com.greensock.easing.Sine;
 	import com.greensock.easing.Linear;
+	import org.flixel.plugin.photonstorm.FlxMath;
 
 	public class Buzzer extends FlxSprite
 	{
@@ -14,11 +15,11 @@ package
 		public function Buzzer(x:int, y:int)
 		{
 			super(x * 16, y * 16);
-			
+
 			loadGraphic(buzzerPNG, true, true, 16, 16);
 			
 			facing = FlxObject.RIGHT;
-			
+
 			addAnimation("walk", [0, 1], 6, true);
 			play("walk");
 			
@@ -35,7 +36,6 @@ package
 			
 			velocity.x = 0;
 			velocity.y = 0;
-			
 			angle = 180;
 			
 			TweenMax.to(this, 1.5, { bezier: [ {x:"64", y:"-64"}, {x:"80", y:"200"} ], onComplete: removeSprite } );
@@ -58,7 +58,7 @@ package
 			if (facing == FlxObject.LEFT)
 			{
 				//	31 is the Collide Index of our Tilemap (which sadly isn't exposed in Flixel 2.5, so is hard-coded here. Not ideal I appreciate)
-				if (Registry.map.getTile(tx - 1, ty) >= 31)
+				if (Registry.map.getTile(tx - 1, ty) >= 31 || x <= 0)
 				{
 					turnAround();
 					return;
@@ -87,13 +87,11 @@ package
 			if (facing == FlxObject.RIGHT)
 			{
 				facing = FlxObject.LEFT;
-				
 				velocity.x = -30;
 			}
 			else
 			{
 				facing = FlxObject.RIGHT;
-				
 				velocity.x = 30;
 			}
 		}

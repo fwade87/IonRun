@@ -16,6 +16,7 @@ package
 		public var waxes:FlxGroup;
 		public var slimes:Enemies;
 		public var buzzers:Enemies;
+
 		
 		private var elevator1:Elevator;
 		private var elevator2:Elevator;
@@ -81,9 +82,9 @@ package
 		{
 			buzzers = new Enemies;
 			
-			buzzers.addBuzzer(16, 16);
-			buzzers.addBuzzer(28, 16);
-			buzzers.addBuzzer(56, 16);
+			buzzers.addBuzzer(16, 10);
+			buzzers.addBuzzer(28, 11);
+			buzzers.addBuzzer(56, 10);
 			
 		}
 		

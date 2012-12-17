@@ -25,12 +25,9 @@ package
 			
 			//	The sprite is 16x18 in size, but that includes a little feather of hair on its head which we don't want to include in collision checks.
 			//	We also shave 2 pixels off each side to make it slip through gaps easier. Changing the width/height does NOT change the visual sprite, just the bounding box used for physics.
-			width = 12;
+			width = 16;
 			height = 16;
-			
-			//	Because we've shaved a few pixels off, we need to offset the sprite to compensate
-			offset.x = 2;
-			offset.y = 2;
+
 			
 			//	The Animation sequences we need
 			addAnimation("idle", [0], 0, false);

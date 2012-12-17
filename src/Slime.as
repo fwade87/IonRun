@@ -8,8 +8,10 @@ package
 	public class Slime extends FlxSprite
 	{
 		[Embed(source = '../assets/slime.png')] private var slimePNG:Class;
+
 		
 		public var isDying:Boolean = false;
+
 		
 		public function Slime(x:int, y:int)
 		{
@@ -24,6 +26,8 @@ package
 			
 			acceleration.y = 50;
 			velocity.x = 30;
+			
+
 		}
 		
 		override public function kill():void
