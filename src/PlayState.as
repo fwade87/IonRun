@@ -7,7 +7,9 @@ package
 	
 	import flash.sampler.NewObjectSample;
 	import org.flixel.*;
+	import org.flixel.plugin.photonstorm.FlxBar;
 	import org.flixel.plugin.photonstorm.FlxDelay;
+	import org.flixel.plugin.photonstorm.FlxHealthBar;
 	
 	public class PlayState extends FlxState
 	{
@@ -35,6 +37,12 @@ package
 		private var enemyHitFX:FlxSound;
 		private var deathHitFX:FlxSound;
 		
+		
+		//hp bars
+
+		private var slimeHPbar:FlxHealthBar;
+		private var playerHPbar:FlxBar;
+		
 		//enemies
 		public var slimeMob:Slime;
 		public var buzzerMob:Buzzer;
@@ -49,6 +57,7 @@ package
 		//create and init all level player, wax, score, worldbounds etc
 		override public function create():void
 		{
+			FlxG.mouse.hide();
 			level = new Level1;
 			
 			//sound stuff
@@ -74,20 +83,26 @@ package
 			score.text =  "0 / " + level.totalWaxes.toString() ;
 			
 			scrapTotal = 0;
-			scrapScore = new FlxText(0, 8, 100);
+			scrapScore = new FlxText(0, 20, 100);
 			scrapScore.color = 0xffffffff;
 			scrapScore.shadow = 0xff000000;
 			scrapScore.scrollFactor.x = 0;
 			scrapScore.scrollFactor.y = 0;
 			scrapScore.text = scrapScore.toString();
 			
-			
+			//player HP
+			player.health = 4;
+			playerHPbar = new FlxBar(player.x, player.y, FlxBar.FILL_LEFT_TO_RIGHT, 18, 4, player,"health",0,4,false);
+			playerHPbar.trackParent(0, -10);
+		
+
 			add(level);
 			add(player);
 			add(level.waxes);
 			add(level.slimes);
 			add(level.buzzers);
 			add(score);
+			add(playerHPbar);
 			add(scrapScore);
 			add(debris);
 		
@@ -103,6 +118,7 @@ package
 			//Debugger Watch examples
 			FlxG.watch(player,"x");
 			FlxG.watch(player, "y");
+			
 			
 			//Finally we are going to sort things into a couple of helper groups.
 			//We don't add these groups to the state, we just use them for collisions later!
@@ -121,10 +137,10 @@ package
 		override public function update():void
 		{
 			super.update();
-			
 			FlxG.collide(player, level);
 			FlxG.collide(_hazards, level);
 			FlxG.collide(_objects, level);
+
 			
 			FlxG.overlap(player, level.slimes, hitSlime);
 			FlxG.overlap(player, level.buzzers, hitBuzzer);
@@ -136,22 +152,21 @@ package
 			if (player.x > Registry.levelExit.x && player.y == Registry.levelExit.y)
 			{
 				player.exists = false;
-				FlxG.fade(0xff000000, 2, changeState);
+				if(_hazards != null)_hazards.destroy();
+				FlxG.fade(0xff000000, 2);
+				FlxG.switchState(new PlayState);
 			}
+			
 		}
-		//next level changer
-		private function changeState():void
-		{
-			FlxG.switchState(new LevelEndState);
-		}
-		
+
 		
 		//COLLISION EFFECTS 
 		
 	
 		//SLIMES
-		private function hitSlime(player:FlxObject, slime:FlxSprite):void
+		private function hitSlime(player:FlxObject, slime:FlxObject):void
 		{
+			FlxG.log("SLIME!!!");
 			if (Slime(slime).isDying)
 			{
 				return;
@@ -165,22 +180,33 @@ package
 				slime.kill();
 				enemyHitFX.play(true);
 				scrapDrops = new FlxSprite(slime.x, slime.y, scrapPNG);
-				_objects.add(scrapDrops);
 				scrapDrops.y += -75;
-				scrapDrops.velocity.y += 130;
+				scrapDrops.acceleration.y = 160;
+				scrapDrops.elasticity = 0.2;
 				add(scrapDrops);
+				_objects.add(scrapDrops);
 			}
 			else
 			{
-				deathHitFX.play(true);
-
-				Player(player).restart();
+				
+				player.x -= 10;
+				player.health -= 1;
+				player.flicker(1);
+				if (player.health <= 0)
+				{
+					player.flicker(2);
+					deathHitFX.play(true);
+					player.exists = false;
+					FlxG.fade(0xff000000, 2);
+					FlxG.switchState(new PlayState);
+				}
 			}
 		}
 		
 		//BUZZER
 		private function hitBuzzer(player:FlxObject, buzzer:FlxObject):void
 		{
+			FlxG.log("BUZZER!!!!");
 			if (Buzzer(buzzer).isDying)
 			{
 				return;
@@ -191,40 +217,49 @@ package
 				
 				debris.createEmitter(buzzer.x, buzzer.y);
 
-				
 				player.velocity.y *= -1;
 				buzzer.kill();
 				enemyHitFX.play(true);
 				scrapDrops = new FlxSprite(buzzer.x, buzzer.y, scrapPNG);
-				_objects.add(scrapDrops);
-				scrapDrops.y += -75;
-				scrapDrops.velocity.y += 130;
+				scrapDrops.y += -25;
+				scrapDrops.acceleration.y = 160;
+				scrapDrops.elasticity = 0.2;
 				add(scrapDrops);
+				_objects.add(scrapDrops);
 			}
 			else
 			{
-				deathHitFX.play(true);
-
-				Player(player).restart();
+				player.x -= 10;
+				player.health -= 1;
+				player.flicker(1);
+				
+				if (player.health <= 0)
+				{
+					player.flicker(2);
+					deathHitFX.play(true);
+					player.exists = false;
+					FlxG.fade(0xff000000, 2);
+					FlxG.switchState(new PlayState);
+				}
 			}
 		}
 		
 		//Scrap Drops
 		private function scrapHit(player:FlxObject, scrapDrops:FlxSprite):void
 		{
+				FlxG.log("SCRAP!!!");
 				enemyHitFX.play(true);
 				scrapScore.text += 1;
-				
 				scrapDrops.kill();
 		}
 		
 		//WAXES
 		private function hitWax(p:FlxObject, wax:FlxObject):void
 		{
+			FlxG.log("WAX!!!");
 			wax.kill();
-			
+			player.health += 1;
 			FlxG.score += 1;
-			
 			waxHitFX.play(true);
 			
 			if (FlxG.score == level.totalWaxes)

@@ -7,8 +7,11 @@ package
 	{
 		[Embed(source = '../assets/player.png')] private var playerPNG:Class;
 		
+		public var playstate:PlayState;
 
 		private var start:FlxPoint;
+		
+		
 		
 		public function Player(x:Number, y:Number)
 		{
@@ -16,8 +19,7 @@ package
 			super(x, y);
 			
 			start = new FlxPoint(x, y);
-			
-
+		
 			
 			//	Load the player.png into this sprite.
 			//	The 2nd parameter tells Flixel it's a sprite sheet and it should chop it up into 16x18 sized frames.
@@ -62,12 +64,7 @@ package
 			//	Changing this tells Flixel to flip the sprite frames to show the left-facing ones instead.
 			facing = FlxObject.RIGHT;
 		}
-		
-		//	We don't actually kill the player at all, we just reset them
-		public function restart():void
-		{
-			reset(start.x, start.y);
-		}
+
 		
 		override public function update():void
 		{
@@ -81,7 +78,8 @@ package
 			//	Have they hit the water?
 			if (y > 268)
 			{
-				restart();
+				FlxG.fade(0xff000000, 2);
+				FlxG.switchState(new PlayState);
 			}
 			
 			if (touching == FlxObject.FLOOR)
