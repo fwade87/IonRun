@@ -6,11 +6,11 @@ package
 	{
 		[Embed(source = "../assets/mapCSV_LevelEnd_Sky.csv", mimeType = "application/octet-stream")] public var skyCSV:Class;
 		[Embed(source = "../assets/backdrop.png")] public var skyTilesPNG:Class;
-		[Embed(source = "../assets/wax.png")] public var waxPNG:Class;
+		[Embed(source = "../assets/gear.png")] public var gearPNG:Class;
 		
 		private var sky:FlxTilemap;
 		private var won:FlxText;
-		private var waxes:FlxEmitter;
+		private var gears:FlxEmitter;
 
 		public function LevelEndState() 
 		{
@@ -29,20 +29,20 @@ package
 			won.scrollFactor.x = 0;
 			won.scrollFactor.y = 0;
 			
-			waxes = new FlxEmitter;
-			waxes.x = 160;
-			waxes.y = 100;
-			waxes.setXSpeed( -100, 100);
-			waxes.setYSpeed( -200, 0);
-			waxes.setRotation( 0, 0);
-			waxes.gravity = 150;
-			waxes.makeParticles(waxPNG, 100, 0, false, 0);
+			gears = new FlxEmitter;
+			gears.x = 160;
+			gears.y = 100;
+			gears.setXSpeed( -100, 100);
+			gears.setYSpeed( -200, 0);
+			gears.setRotation( 0, 0);
+			gears.gravity = 150;
+			gears.makeParticles(gearPNG, 100, 0, false, 0);
 			
 			
-			waxes.start(false, 4, 0.1);
+			gears.start(false, 4, 0.1);
 			
 			add(sky);
-			add(waxes);
+			add(gears);
 			add(won);
 		}
 		//checks for key press

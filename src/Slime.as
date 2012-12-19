@@ -16,14 +16,14 @@ package
 		public function Slime(x:int, y:int)
 		{
 			super(x * 16, y * 16);
-			
 			loadGraphic(slimePNG, true, true, 16, 16);
-			
 			facing = FlxObject.RIGHT;
 			
+			//animation
 			addAnimation("walk", [0, 1], 6, true);
 			play("walk");
 			
+			//speed stuff
 			acceleration.y = 50;
 			velocity.x = 30;
 			
@@ -32,14 +32,10 @@ package
 		
 		override public function kill():void
 		{
-			
 			isDying = true;
-			
 			frame = 1;
-			
 			velocity.x = 0;
 			velocity.y = 0;
-			
 			angle = 180;
 			
 			TweenMax.to(this, 1.5, { bezier: [ {x:"64", y:"-64"}, {x:"80", y:"200"} ], onComplete: removeSprite } );
@@ -54,36 +50,7 @@ package
 		{
 			super.update();
 			
-			//	Check the tiles on the left / right of it
-			
-			var tx:int = int(x / 16);
-			var ty:int = int(y / 16);
-			
-			if (facing == FlxObject.LEFT)
-			{
-				//	31 is the Collide Index of our Tilemap (which sadly isn't exposed in Flixel 2.5, so is hard-coded here. Not ideal I appreciate)
-				if (Registry.map.getTile(tx - 1, ty) >= 31)
-				{
-					turnAround();
-					return;
-				}
-			}
-			else
-			{
-				//	31 is the Collide Index of our Tilemap (which sadly isn't exposed in Flixel 2.5, so is hard-coded here. Not ideal I appreciate)
-				if (Registry.map.getTile(tx + 1, ty) >= 31)
-				{
-					turnAround();
-					return;
-				}
-			}
-			
-			//	Check the tiles below it
-			
-			if (isTouching(FlxObject.FLOOR) == false && isDying == false)
-			{
-				turnAround();
-			}
+
 		}
 		
 		private function turnAround():void

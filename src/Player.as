@@ -8,19 +8,19 @@ package
 		[Embed(source = '../assets/player.png')] private var playerPNG:Class;
 		
 		public var playstate:PlayState;
-
 		private var start:FlxPoint;
-		
-		
+		public var playerHPbar:FlxBar;
+		//double jump stuff
+		public var DOUBLEJUMP:Boolean;
+		private var SINGLEJUMP:Boolean;
+		private var jumpspeed:int = 200;
 		
 		public function Player(x:Number, y:Number)
 		{
 			//	As this extends FlxSprite we need to call super() to ensure all of the parent variables we need are created
 			super(x, y);
-			
 			start = new FlxPoint(x, y);
 		
-			
 			//	Load the player.png into this sprite.
 			//	The 2nd parameter tells Flixel it's a sprite sheet and it should chop it up into 16x18 sized frames.
 			loadGraphic(playerPNG, true, true, 16, 18, true);
@@ -29,7 +29,11 @@ package
 			//	We also shave 2 pixels off each side to make it slip through gaps easier. Changing the width/height does NOT change the visual sprite, just the bounding box used for physics.
 			width = 16;
 			height = 16;
-
+			
+			//player HP
+			health = 4;
+			playerHPbar = new FlxBar(x, y, FlxBar.FILL_LEFT_TO_RIGHT, 17, 4, this, "health", 0, 4, false);
+			playerHPbar.trackParent(0, -12);
 			
 			//	The Animation sequences we need
 			addAnimation("idle", [0], 0, false);
@@ -49,26 +53,49 @@ package
 			//	Sprite will be controlled with the left and right cursor keys
 			FlxControl.player1.setCursorControl(false, false, true, true);
 			
-			//	And SPACE BAR will make them jump up to a maximum of 200 pixels (per second), only when touching the FLOOR
-			FlxControl.player1.setJumpButton("SPACE", FlxControlHandler.KEYMODE_PRESSED, 200, FlxObject.FLOOR, 250, 200);
+			//jumping is in update
 			
 			//	Because we are using the MOVEMENT_ACCELERATES type the first value is the acceleration speed of the sprite
 			//	Think of it as the time it takes to reach maximum velocity. A value of 100 means it would take 1 second. A value of 400 means it would take 0.25 of a second.
 			FlxControl.player1.setMovementSpeed(400, 0, 100, 200, 400, 0);
 			
-			//	Set a downward gravity of 400px/sec
-			FlxControl.player1.setGravity(0, 400);
+			//	Set a downward gravity 
+			FlxControl.player1.setGravity(0, 420);
 			
 			
 			//	By default the sprite is facing to the right.
 			//	Changing this tells Flixel to flip the sprite frames to show the left-facing ones instead.
 			facing = FlxObject.RIGHT;
+   
 		}
 
 		
 		override public function update():void
 		{
 			super.update();
+			
+		//This first 'if' statement is our initial jump
+			if (FlxG.keys.justPressed("SPACE") && velocity.y == 0)
+				{
+				velocity.y = -jumpspeed;
+				DOUBLEJUMP = false;
+				SINGLEJUMP = true;
+				}
+			 
+			//This second 'if' statement checks that we've stopped doing our first jump, and sets us up to do a double jump.
+			if ((FlxG.keys.justReleased("SPACE") && SINGLEJUMP) || velocity.y == 0)
+				{
+				DOUBLEJUMP = true;
+				SINGLEJUMP = false;
+				}
+			 
+			//This final 'if' statement is our mid-air, or double jump
+			if (FlxG.keys.justPressed("SPACE") && (velocity.y > 0 || velocity.y < 0) && DOUBLEJUMP)
+				{
+				velocity.y = -jumpspeed/1.4;
+				DOUBLEJUMP = false;
+				}
+			
 			
 			if (x < 0)
 			{

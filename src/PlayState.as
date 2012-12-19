@@ -1,7 +1,7 @@
 package  
 {
 	
-	//** --- THE MAIN CLASS !! -----
+	//** Auther: Frank Wade
 	//**
 	//**
 	
@@ -13,36 +13,45 @@ package
 	
 	public class PlayState extends FlxState
 	{
-		//sound fxs and music and gfx
-		[Embed(source = "../assets/sfx/waxhit1.mp3")] private var waxFX:Class;
+		//Embed Assets (Gfx, sfx, etc.)
+		[Embed(source = "../assets/sfx/gearhit1.mp3")] private var gearFX:Class;
 		[Embed(source = "../assets/sfx/enemyhit1.mp3")] private var enemyFX:Class;
 		[Embed(source = "../assets/sfx/death.mp3")] private var deathFX:Class;
+		[Embed(source = "../assets/sfx/playerhit1.mp3")] private var playerhurtFX:Class;
+		[Embed(source = "../assets/sfx/scrapFX.mp3")] private var scrapFX:Class;
 		[Embed(source = "../assets/drop1.png")] private var scrapPNG:Class;
 
 		//main game vars
 		private var player:Player;
-		private var level:Level1;
+		private var level:BaseLevel;
+		
+		//lvls
+		public var lvl1:Class = Level1;
+		public var lvl2:Class = Level2;
+		
+		//make an array out of the Class references of the stages
+		public static var lvls:Array;
+		
+		//scrap and score!
 		private var score:FlxText;
 		private var scrapScore:FlxText;
-		private var scrapTotal:Number;
-		public var scrapDrops:FlxSprite;
-		public var scrapDelay:FlxDelay;
+		private var scrapTotal:int;
+		private var _scrapDrops:FlxGroup;
+		private var scrap:FlxSprite;
+		
+		//set the stage counter at 0
+		public static var lvlCount:int = 1;
 
 		//gibs
-
 		public var debris:Debris;
 		
 		//soundfx
-		private var waxHitFX:FlxSound;
+		private var gearHitFX:FlxSound;
 		private var enemyHitFX:FlxSound;
 		private var deathHitFX:FlxSound;
-		
-		
-		//hp bars
+		private var scrapHitFX:FlxSound;
+		private var playerhurtHitFX:FlxSound;
 
-		private var slimeHPbar:FlxHealthBar;
-		private var playerHPbar:FlxBar;
-		
 		//enemies
 		public var slimeMob:Slime;
 		public var buzzerMob:Buzzer;
@@ -54,15 +63,24 @@ package
 		public function PlayState() 
 		{
 		}
-		//create and init all level player, wax, score, worldbounds etc
+		
+		//create and init all level player, gear, score, worldbounds etc
 		override public function create():void
 		{
 			FlxG.mouse.hide();
-			level = new Level1;
 			
-			//sound stuff
-			waxHitFX = new FlxSound;
-			waxHitFX.loadEmbedded(waxFX);
+			lvls = [lvl1,lvl2];
+			makeStage();
+			
+						//sound stuff
+			gearHitFX = new FlxSound;
+			gearHitFX.loadEmbedded(gearFX);
+			
+			scrapHitFX = new FlxSound;
+			scrapHitFX.loadEmbedded(scrapFX);
+			
+			playerhurtHitFX = new FlxSound;
+			playerhurtHitFX.loadEmbedded(playerhurtFX);
 			
 			deathHitFX = new FlxSound;
 			deathHitFX.loadEmbedded(deathFX);
@@ -70,66 +88,34 @@ package
 			enemyHitFX = new FlxSound;
 			enemyHitFX.loadEmbedded(enemyFX);
 	
-			//player
-			player = new Player(20, 90);
-
-			debris = new Debris;
+		
+		
+			
 			//score stuff
 			score = new FlxText(0, 0, 100);
 			score.color = 0xffffffff;
 			score.shadow = 0xff000000;
 			score.scrollFactor.x = 0;
 			score.scrollFactor.y = 0;
-			score.text =  "0 / " + level.totalWaxes.toString() ;
+			score.text =  "0 / " + level.totalGears.toString() ;
 			
-			scrapTotal = 0;
 			scrapScore = new FlxText(0, 20, 100);
 			scrapScore.color = 0xffffffff;
 			scrapScore.shadow = 0xff000000;
 			scrapScore.scrollFactor.x = 0;
 			scrapScore.scrollFactor.y = 0;
-			scrapScore.text = scrapScore.toString();
-			
-			//player HP
-			player.health = 4;
-			playerHPbar = new FlxBar(player.x, player.y, FlxBar.FILL_LEFT_TO_RIGHT, 18, 4, player,"health",0,4,false);
-			playerHPbar.trackParent(0, -10);
-		
+			scrapScore.text = scrapTotal.toString();
 
-			add(level);
-			add(player);
-			add(level.waxes);
-			add(level.slimes);
-			add(level.buzzers);
-			add(score);
-			add(playerHPbar);
-			add(scrapScore);
-			add(debris);
-		
-			//	Tell flixel how big our game world is
-			FlxG.worldBounds = new FlxRect(0, 0, level.width, level.height);
-			
-			//	Don't let the camera wander off the edges of the map
-			FlxG.camera.setBounds(0, 0, level.width, level.height);
-			
-			//	The camera will follow the player
-			FlxG.camera.follow(player, FlxCamera.STYLE_PLATFORMER);
-			
-			//Debugger Watch examples
-			FlxG.watch(player,"x");
-			FlxG.watch(player, "y");
-			
-			
-			//Finally we are going to sort things into a couple of helper groups.
-			//We don't add these groups to the state, we just use them for collisions later!
+			//meta groups !
 			_hazards = new FlxGroup();
 			_hazards.add(level.slimes);
-			_hazards.add(level.buzzers);
 			
 			_objects = new FlxGroup();
 			_objects.add(debris);
-			_objects.add(scrapDrops);
-			_objects.add(level.waxes);
+			_objects.add(level.levelGears);
+			
+			_scrapDrops = new FlxGroup();
+			_objects.add(_scrapDrops);
 			
 			
 		}
@@ -140,58 +126,88 @@ package
 			FlxG.collide(player, level);
 			FlxG.collide(_hazards, level);
 			FlxG.collide(_objects, level);
-
 			
 			FlxG.overlap(player, level.slimes, hitSlime);
 			FlxG.overlap(player, level.buzzers, hitBuzzer);
-			FlxG.overlap(player, level.waxes, hitWax);
-			FlxG.overlap(player, scrapDrops, scrapHit);
-			
+			FlxG.overlap(player, level.levelGears, hitGear);
+			FlxG.overlap(player, _scrapDrops, scrapHit);
 			
 			//	Player walked through end of level exit?
-			if (player.x > Registry.levelExit.x && player.y == Registry.levelExit.y)
-			{
-				player.exists = false;
-				if(_hazards != null)_hazards.destroy();
-				FlxG.fade(0xff000000, 2);
-				FlxG.switchState(new PlayState);
-			}
+
+		}
+		
+		//generate the stage
+		public function makeStage():void
+		{	
+			level = new lvls[lvlCount];
+			add(level.map);
+			//player
+			player = new Player(20, 90);
+
+					//	Tell flixel how big our game world is
+			FlxG.worldBounds = new FlxRect(0, 0, level.width, level.height);
 			
+			//	Don't let the camera wander off the edges of the map
+			FlxG.camera.setBounds(0, 0, level.width, level.height);
+			
+			//	The camera will follow the player
+			FlxG.camera.follow(player, FlxCamera.STYLE_PLATFORMER);
+			
+			//add everything
+			add(level.sky);
+			add(level.interact);
+			add(player);
+			add(score);
+			add(player.playerHPbar);
+			add(scrapScore);
+			add(debris);
+
+			//Debugger
+			FlxG.watch(player,"x","Player X: ");
+			FlxG.watch(player, "y","Player Y: ");
+			FlxG.log("Playstate started...");
+
 		}
 
-		
 		//COLLISION EFFECTS 
-		
-	
 		//SLIMES
 		private function hitSlime(player:FlxObject, slime:FlxObject):void
 		{
-			FlxG.log("SLIME!!!");
 			if (Slime(slime).isDying)
 			{
 				return;
 			}
-			
-			if (player.y < slime.y)
+			//If enemy is "stomped"...
+			if (player.y < slime.y && player.acceleration.y != 0)
 			{
+				//gibs
 				debris.createEmitter(slime.x, slime.y);
-
+				//bounce player
 				player.velocity.y *= -1;
+				//kill enemy
 				slime.kill();
+				//enemy death SFX
 				enemyHitFX.play(true);
-				scrapDrops = new FlxSprite(slime.x, slime.y, scrapPNG);
-				scrapDrops.y += -75;
-				scrapDrops.acceleration.y = 160;
-				scrapDrops.elasticity = 0.2;
-				add(scrapDrops);
-				_objects.add(scrapDrops);
+				//LOOT!
+				scrap = new FlxSprite(slime.x, slime.y, scrapPNG);
+				//Start loot above players head...
+				scrap.y += -55;
+				//loot gravity...
+				scrap.acceleration.y = 100;
+				//loot bounce!
+				scrap.elasticity = 0.8;
+				//add to loot group!
+				_scrapDrops.add(scrap);
+				//loooooooooot!
+				add(scrap);
 			}
 			else
 			{
-				
+				//Player DMG ! :(
 				player.x -= 10;
 				player.health -= 1;
 				player.flicker(1);
+				playerhurtHitFX.play(true);
 				if (player.health <= 0)
 				{
 					player.flicker(2);
@@ -206,33 +222,41 @@ package
 		//BUZZER
 		private function hitBuzzer(player:FlxObject, buzzer:FlxObject):void
 		{
-			FlxG.log("BUZZER!!!!");
 			if (Buzzer(buzzer).isDying)
 			{
 				return;
 			}
-			
-			if (player.y < buzzer.y)
+			//If enemy is "stomped"...
+			if (player.y < buzzer.y && player.acceleration.y != 0)
 			{
-				
+				//gibs
 				debris.createEmitter(buzzer.x, buzzer.y);
-
+				//bounce player
 				player.velocity.y *= -1;
+				//kill enemy
 				buzzer.kill();
+				//enemy death SFX
 				enemyHitFX.play(true);
-				scrapDrops = new FlxSprite(buzzer.x, buzzer.y, scrapPNG);
-				scrapDrops.y += -25;
-				scrapDrops.acceleration.y = 160;
-				scrapDrops.elasticity = 0.2;
-				add(scrapDrops);
-				_objects.add(scrapDrops);
+				//LOOT!
+				scrap = new FlxSprite(buzzer.x, buzzer.y, scrapPNG);
+				//Start loot above players head...
+				scrap.y += -55;
+				//loot gravity
+				scrap.acceleration.y = 100;
+				//loot bounce
+				scrap.elasticity = 0.8;
+				//loot to group, add loot
+				_scrapDrops.add(scrap);
+				add(scrap);
+				
 			}
 			else
 			{
+				//player DMG
 				player.x -= 10;
 				player.health -= 1;
 				player.flicker(1);
-				
+				playerhurtHitFX.play(true);
 				if (player.health <= 0)
 				{
 					player.flicker(2);
@@ -245,32 +269,34 @@ package
 		}
 		
 		//Scrap Drops
-		private function scrapHit(player:FlxObject, scrapDrops:FlxSprite):void
+		private function scrapHit(player:FlxObject, scrap:FlxSprite):void
 		{
-				FlxG.log("SCRAP!!!");
-				enemyHitFX.play(true);
-				scrapScore.text += 1;
-				scrapDrops.kill();
+				scrapHitFX.play(true);
+				//score ++
+				scrapTotal++;
+				scrapScore.text = scrapTotal.toString();
+				//remove from scene
+				scrap.kill();
 		}
 		
 		//WAXES
-		private function hitWax(p:FlxObject, wax:FlxObject):void
+		private function hitGear(p:FlxObject, gear:FlxObject):void
 		{
-			FlxG.log("WAX!!!");
-			wax.kill();
+			gear.kill();
 			player.health += 1;
+			//main score ++
 			FlxG.score += 1;
-			waxHitFX.play(true);
+			gearHitFX.play(true);
 			
-			if (FlxG.score == level.totalWaxes)
+			if (FlxG.score == level.totalGears)
 			{
 				//	Opens the exit at the end of the level
-				score.text = FlxG.score.toString() + " / " + level.totalWaxes.toString() + " EXIT OPEN!";
+				score.text = FlxG.score.toString() + " / " + level.totalGears.toString() + " EXIT OPEN!";
 				level.openExit();
 			}
 			else
 			{
-				score.text = FlxG.score.toString() + " / " + level.totalWaxes.toString();
+				score.text = FlxG.score.toString() + " / " + level.totalGears.toString();
 			}
 		}
 		

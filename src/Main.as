@@ -9,7 +9,7 @@ package
 		public function Main()
 		{
 
-			super(320, 240, MainMenuState, 2, 60, 60);
+			super(320, 240, PlayState, 2, 60, 60);
 			
 			forceDebugger = true;
 		}

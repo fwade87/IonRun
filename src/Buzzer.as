@@ -17,28 +17,23 @@ package
 		public function Buzzer(x:int, y:int)
 		{
 			super(x * 16, y * 16);
-			
 			loadGraphic(buzzerPNG, true, true, 16, 16);
-			
 			facing = FlxObject.RIGHT;
 
+			//animations
 			addAnimation("walk", [0, 1], 6, true);
 			play("walk");
 			
-			acceleration.y -= 1;
+			//speed and flight 
 			velocity.x = 30;
-			
 			spin = 0;
 			flighttime = 0;
 		}
 		
 		override public function kill():void
 		{
-			
 			isDying = true;
-			
 			frame = 1;
-			
 			velocity.x = 0;
 			velocity.y = 0;
 			angle = 180;
@@ -54,41 +49,7 @@ package
 		override public function update():void
 		{
 			super.update();
-			x--;
-			flighttime++;
-			spin = ((flighttime * 3.0) % (2 * 3.14));
-			velocity.y += Math.sin (spin) * 25;
-			
-			//	Check the tiles on the left / right of it
-			
-			var tx:int = int(x / 16);
-			var ty:int = int(y / 16);
-			
-			if (facing == FlxObject.LEFT)
-			{
-				//	31 is the Collide Index of our Tilemap (which sadly isn't exposed in Flixel 2.5, so is hard-coded here. Not ideal I appreciate)
-				if (Registry.map.getTile(tx - 1, ty) >= 31 || x <= 0)
-				{
-					turnAround();
-					return;
-				}
-			}
-			else
-			{
-				//	31 is the Collide Index of our Tilemap (which sadly isn't exposed in Flixel 2.5, so is hard-coded here. Not ideal I appreciate)
-				if (Registry.map.getTile(tx + 1, ty) >= 31)
-				{
-					turnAround();
-					return;
-				}
-			}
-			
-			//	Check the tiles below it
-			
-			if (isTouching(FlxObject.FLOOR) == false && isDying == false)
-			{
-				turnAround();
-			}
+
 		}
 		
 		private function turnAround():void

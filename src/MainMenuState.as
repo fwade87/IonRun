@@ -55,7 +55,7 @@ package
 			floodfill.start();
 			
 			add(level);
-			add(level.waxes);
+			add(level.gears);
 			add(title);
 			add(start);
 		}
