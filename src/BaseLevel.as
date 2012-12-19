@@ -15,13 +15,16 @@ package
 		public var skyCSV:Class;
 		public var mapCSV:Class;
 		public var interactCSV:Class;
-		
-		public var gears:Gear;
-		public var slimes:Slime;
-		public var buzzers:Buzzer;
-		
 
+		//enemies
+		public var slimeMob:Slime;
+		public var buzzerMob:Buzzer;
+				
+		public var slimes:Enemies;
+		public var buzzers:Enemies;
+		
 		public var levelGears:FlxGroup;
+		
 		private var elevator1:Elevator;
 		private var elevator2:Elevator;
 		
@@ -34,18 +37,53 @@ package
 			registry = new Registry;
 			data = new LevelData;
 			setData();
-			createFloorMap();
 			createBackgroundMap();
+			createFloorMap();
 			createInteractiveElements();
+			
 			setDimensions();
+			
+			if (skipMobs == false)
+			{
+
+				addSlimes();
+				addBuzzers();
+			}
+		}
+		
+		
+		//ACTUALLY ADDING THE ENEMIES TO THE LEVEL
+		
+		//SLIMES
+		private function addSlimes():void
+		{
+			slimes = new Enemies;
+			
+			slimes.addSlime(11, 16);
+			slimes.addSlime(15, 16);
+			slimes.addSlime(31, 16);
+			slimes.addSlime(28, 16);
+			slimes.addSlime(74, 16);
+			slimes.addSlime(92, 16);
+		}
+		//BUZZERS
+		private function addBuzzers():void
+		{
+			buzzers = new Enemies;
+			
+			buzzers.addBuzzer(16, 10);
+			buzzers.addBuzzer(28, 11);
+			buzzers.addBuzzer(56, 10);
+			
 		}
 		
 		//this assigns the data to the variables used in map creation. Override it to generate different stages
 		public function setData():void
 		{
+			skyCSV = data.sky1;
 			mapCSV = data.map1;
 			interactCSV = data.interact1;
-			skyCSV = data.sky1;
+			
 		}
 
 		//this just loads the floorMap from whatever you set floorCSV to
@@ -61,7 +99,7 @@ package
 		//this just loads the backgroundMap from whatever you set backgroundCSV to
 		public function createBackgroundMap():void
 		{
-			sky = new FlxTilemap;
+			sky = recycle(FlxTilemap) as  FlxTilemap;
 			sky.loadMap(new skyCSV, data.skyTilesPNG, 192, 336);
 			sky.setTileProperties(1, FlxObject.NONE);
 			sky.scrollFactor.x = 0.9;
@@ -86,11 +124,11 @@ package
 				{
 					
 					//check for goal tiles and add them to the stageGoal FlxGroup
-					if (interact.getTile(tx, ty) == 22)
+					if (interact.getTile(tx, ty) == 4)
 					{
-						var templevelGears:Gear = recycle(Gear) as Gear;
-						templevelGears.reset(tx * 16, (ty * 16)+8);
-						levelGears.add(templevelGears);
+						var tempGear:Gear = recycle(Gear) as Gear;
+						tempGear.reset(tx * 16, (ty * 16)+8);
+						levelGears.add(tempGear);
 					}
 
 				}

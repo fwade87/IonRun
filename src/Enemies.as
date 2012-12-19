@@ -4,6 +4,7 @@ package
 
 	public class Enemies extends FlxGroup
 	{
+
 		public function Enemies()
 		{
 			super();

@@ -55,7 +55,7 @@ package src
 			layerLevel1Interact.y = 0.000000;
 			layerLevel1Interact.scrollFactor.x = 1.000000;
 			layerLevel1Interact.scrollFactor.y = 1.000000;
-			layerLevel1Interact.collideIndex = 1;
+			layerLevel1Interact.collideIndex = 3;
 			layerLevel1Interact.drawIndex = 1;
 			layerLevel2Sky = new FlxTilemap;
 			layerLevel2Sky.loadMap( new CSV_Level2Sky, Img_Level2Sky, 192,336 );
@@ -79,7 +79,7 @@ package src
 			layerLevel2Interact.y = 0.000000;
 			layerLevel2Interact.scrollFactor.x = 1.000000;
 			layerLevel2Interact.scrollFactor.y = 1.000000;
-			layerLevel2Interact.collideIndex = 1;
+			layerLevel2Interact.collideIndex = 3;
 			layerLevel2Interact.drawIndex = 1;
 
 			//Add layers to the master group in correct order.

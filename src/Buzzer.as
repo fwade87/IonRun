@@ -25,7 +25,7 @@ package
 			play("walk");
 			
 			//speed and flight 
-			velocity.x = 30;
+			velocity.x = -30;
 			spin = 0;
 			flighttime = 0;
 		}

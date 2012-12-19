@@ -4,11 +4,6 @@ package
 
 	public class Level2 extends BaseLevel
 	{
-
-		public function Level2(skipMobs:Boolean = false) 
-		{
-		
-		}
 		
 		override public function setData():void
 		{

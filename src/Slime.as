@@ -25,7 +25,7 @@ package
 			
 			//speed stuff
 			acceleration.y = 50;
-			velocity.x = 30;
+			velocity.x = -30;
 			
 
 		}

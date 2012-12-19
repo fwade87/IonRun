@@ -24,6 +24,7 @@ package
 		//main game vars
 		private var player:Player;
 		private var level:BaseLevel;
+		public var registry:Registry;
 		
 		//lvls
 		public var lvl1:Class = Level1;
@@ -38,6 +39,7 @@ package
 		private var scrapTotal:int;
 		private var _scrapDrops:FlxGroup;
 		private var scrap:FlxSprite;
+		private var gear:Gear;
 		
 		//set the stage counter at 0
 		public static var lvlCount:int = 1;
@@ -52,9 +54,7 @@ package
 		private var scrapHitFX:FlxSound;
 		private var playerhurtHitFX:FlxSound;
 
-		//enemies
-		public var slimeMob:Slime;
-		public var buzzerMob:Buzzer;
+
 		
 		//meta groups, to help speed up collisions
 		protected var _objects:FlxGroup;
@@ -72,7 +72,7 @@ package
 			lvls = [lvl1,lvl2];
 			makeStage();
 			
-						//sound stuff
+			//sound stuff
 			gearHitFX = new FlxSound;
 			gearHitFX.loadEmbedded(gearFX);
 			
@@ -87,10 +87,9 @@ package
 			
 			enemyHitFX = new FlxSound;
 			enemyHitFX.loadEmbedded(enemyFX);
-	
-		
-		
+
 			
+			debris = new Debris;
 			//score stuff
 			score = new FlxText(0, 0, 100);
 			score.color = 0xffffffff;
@@ -105,14 +104,16 @@ package
 			scrapScore.scrollFactor.x = 0;
 			scrapScore.scrollFactor.y = 0;
 			scrapScore.text = scrapTotal.toString();
-
+			
 			//meta groups !
 			_hazards = new FlxGroup();
 			_hazards.add(level.slimes);
+			_hazards.add(level.buzzers);
+			
 			
 			_objects = new FlxGroup();
+			
 			_objects.add(debris);
-			_objects.add(level.levelGears);
 			
 			_scrapDrops = new FlxGroup();
 			_objects.add(_scrapDrops);
@@ -127,40 +128,44 @@ package
 			FlxG.collide(_hazards, level);
 			FlxG.collide(_objects, level);
 			
-			FlxG.overlap(player, level.slimes, hitSlime);
+			FlxG.overlap(player,level.slimes, hitSlime);
 			FlxG.overlap(player, level.buzzers, hitBuzzer);
-			FlxG.overlap(player, level.levelGears, hitGear);
+			FlxG.overlap(player, gear, hitGear);
 			FlxG.overlap(player, _scrapDrops, scrapHit);
-			
-			//	Player walked through end of level exit?
-
 		}
 		
 		//generate the stage
 		public function makeStage():void
 		{	
-			level = new lvls[lvlCount];
-			add(level.map);
-			//player
-			player = new Player(20, 90);
-
-					//	Tell flixel how big our game world is
-			FlxG.worldBounds = new FlxRect(0, 0, level.width, level.height);
 			
+			level = new lvls[lvlCount];
+			add(level.sky);
+			
+			//player
+			player = new Player(20, 60);
+
+	
+			
+			//	Tell flixel how big our game world is
+			FlxG.worldBounds = new FlxRect(0, 0, level.width, level.height);
 			//	Don't let the camera wander off the edges of the map
 			FlxG.camera.setBounds(0, 0, level.width, level.height);
-			
 			//	The camera will follow the player
 			FlxG.camera.follow(player, FlxCamera.STYLE_PLATFORMER);
 			
 			//add everything
-			add(level.sky);
-			add(level.interact);
-			add(player);
-			add(score);
-			add(player.playerHPbar);
-			add(scrapScore);
 			add(debris);
+			add(level.map);
+			add(level.slimes);
+			add(level.buzzers);
+			add(player.playerHPbar);
+			add(level.interact);
+			add(score);
+			add(scrapScore);
+			
+			add(player);
+			
+			FlxG.camera.flash(0xff000000, 1, null, false);
 
 			//Debugger
 			FlxG.watch(player,"x","Player X: ");
@@ -279,7 +284,7 @@ package
 				scrap.kill();
 		}
 		
-		//WAXES
+		//GEARS
 		private function hitGear(p:FlxObject, gear:FlxObject):void
 		{
 			gear.kill();
