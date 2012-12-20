@@ -130,7 +130,7 @@ package
 			
 			FlxG.overlap(player,level.slimes, hitSlime);
 			FlxG.overlap(player, level.buzzers, hitBuzzer);
-			FlxG.overlap(player, gear, hitGear);
+			FlxG.overlap(player, level.levelGears, hitGear);
 			FlxG.overlap(player, _scrapDrops, scrapHit);
 		}
 		
@@ -287,6 +287,7 @@ package
 		//GEARS
 		private function hitGear(p:FlxObject, gear:FlxObject):void
 		{
+			FlxG.log("GEAR HIT!");
 			gear.kill();
 			player.health += 1;
 			//main score ++

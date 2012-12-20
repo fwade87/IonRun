@@ -6,31 +6,33 @@ package
 	public class BaseLevel extends FlxGroup
 	{
 
+		//Get Registry
 		public var registry:Registry;
-		public var data:LevelData;
+		
+		//TileMaps and CSV classes
 		public var sky:FlxTilemap;
 		public var map:FlxTilemap;
 		public var interact:FlxTilemap;
-		
 		public var skyCSV:Class;
 		public var mapCSV:Class;
 		public var interactCSV:Class;
 
-		//enemies
+		//enemies and enemy groups
 		public var slimeMob:Slime;
 		public var buzzerMob:Buzzer;
-				
 		public var slimes:Enemies;
 		public var buzzers:Enemies;
 		
+		//gears and elevators
 		public var levelGears:FlxGroup;
-		
 		private var elevator1:Elevator;
 		private var elevator2:Elevator;
+		public var totalGears:int;
 		
+		//deminsions
 		public var width:int;
 		public var height:int;
-		public var totalGears:int;
+
 		
 		public function BaseLevel(skipMobs:Boolean = false) 
 		{
@@ -127,7 +129,6 @@ package
 					if (interact.getTile(tx, ty) == 4)
 					{
 						var tempGear:Gear = recycle(Gear) as Gear;
-						tempGear.reset(tx * 16, (ty * 16)+8);
 						levelGears.add(tempGear);
 					}
 

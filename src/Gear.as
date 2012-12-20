@@ -8,7 +8,7 @@ package
 		
 		public function Gear(X:int, Y:int)
 		{
-			super(X * 16, Y * 16, gearPNG);
+			super(X, Y, gearPNG);
 			solid = false;
 		}
 		
