@@ -39,6 +39,8 @@ package
 		private var scrapTotal:int;
 		private var _scrapDrops:FlxGroup;
 		private var scrap:FlxSprite;
+		
+		//gears
 		private var gear:Gear;
 		
 		//set the stage counter at 0
@@ -105,6 +107,7 @@ package
 			scrapScore.scrollFactor.y = 0;
 			scrapScore.text = scrapTotal.toString();
 			
+			
 			//meta groups !
 			_hazards = new FlxGroup();
 			_hazards.add(level.slimes);
@@ -143,8 +146,6 @@ package
 			
 			//player
 			player = new Player(20, 60);
-
-	
 			
 			//	Tell flixel how big our game world is
 			FlxG.worldBounds = new FlxRect(0, 0, level.width, level.height);
@@ -285,7 +286,7 @@ package
 		}
 		
 		//GEARS
-		private function hitGear(p:FlxObject, gear:FlxObject):void
+		private function hitGear(player:FlxObject, gear:FlxGroup):void
 		{
 			FlxG.log("GEAR HIT!");
 			gear.kill();

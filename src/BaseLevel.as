@@ -1,6 +1,5 @@
 package  
 {
-	import com.greensock.loading.data.DataLoaderVars;
 	import org.flixel.*;
 
 	public class BaseLevel extends FlxGroup
@@ -36,15 +35,19 @@ package
 		
 		public function BaseLevel(skipMobs:Boolean = false) 
 		{
+			//Get Data from reg
 			registry = new Registry;
-			data = new LevelData;
 			setData();
+			
+			//The create functions for Sky, map and Interact tiles
 			createBackgroundMap();
 			createFloorMap();
 			createInteractiveElements();
 			
+			//deminsions
 			setDimensions();
 			
+			//enemies functions
 			if (skipMobs == false)
 			{
 
@@ -56,7 +59,7 @@ package
 		
 		//ACTUALLY ADDING THE ENEMIES TO THE LEVEL
 		
-		//SLIMES
+		//slime
 		private function addSlimes():void
 		{
 			slimes = new Enemies;
@@ -68,7 +71,7 @@ package
 			slimes.addSlime(74, 16);
 			slimes.addSlime(92, 16);
 		}
-		//BUZZERS
+		//buzzer
 		private function addBuzzers():void
 		{
 			buzzers = new Enemies;
@@ -79,12 +82,12 @@ package
 			
 		}
 		
-		//this assigns the data to the variables used in map creation. Override it to generate different stages
+		//this assigns the registry to the variables used in map creation. Override it to generate different stages
 		public function setData():void
 		{
-			skyCSV = data.sky1;
-			mapCSV = data.map1;
-			interactCSV = data.interact1;
+			skyCSV = registry.sky1;
+			mapCSV = registry.map1;
+			interactCSV = registry.interact1;
 			
 		}
 
@@ -92,7 +95,7 @@ package
 		public function createFloorMap():void
 		{
 			map = recycle(FlxTilemap) as FlxTilemap;
-			map.loadMap(new mapCSV,data.tilesPNG, 16, 16, 0, 0, 1, 31);
+			map.loadMap(new mapCSV,registry.tilesPNG, 16, 16, 0, 0, 1, 31);
 			//	Makes these tiles as allowed to be jumped UP through (but collide at all other angles)
 			map.setTileProperties(40, FlxObject.UP, null, null, 4);
 			
@@ -102,17 +105,17 @@ package
 		public function createBackgroundMap():void
 		{
 			sky = recycle(FlxTilemap) as  FlxTilemap;
-			sky.loadMap(new skyCSV, data.skyTilesPNG, 192, 336);
+			sky.loadMap(new skyCSV, registry.skyTilesPNG, 192, 336);
 			sky.setTileProperties(1, FlxObject.NONE);
 			sky.scrollFactor.x = 0.9;
 		}
 		
 		//this runs a for loop that checks a map based on interactCSV
-		//and creates an interact element in it's respective FlxGroup based on the CSV data
+		//and creates an interact element in it's respective FlxGroup based on the CSV registry
 		public function createInteractiveElements():void
 		{
 			interact = recycle(FlxTilemap) as FlxTilemap;
-			interact.loadMap(new interactCSV, data.interactPNG, 16, 16);
+			interact.loadMap(new interactCSV, registry.interactPNG, 16, 16,0,0,1,31);
 			
 			//initialize the interact element FlxGroups
 			levelGears = recycle(FlxGroup) as FlxGroup;

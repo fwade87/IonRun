@@ -7,9 +7,9 @@ package
 
 		override public function setData():void
 		{
-			mapCSV = data.map1;
-			interactCSV = data.interact1;
-			skyCSV = data.sky1;
+			mapCSV = registry.map1;
+			interactCSV = registry.interact1;
+			skyCSV = registry.sky1;
 		}
 	}
 }
