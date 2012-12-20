@@ -129,9 +129,9 @@ package
 				{
 					
 					//check for goal tiles and add them to the stageGoal FlxGroup
-					if (interact.getTile(tx, ty) == 4)
+					if (interact.getTile(tx, ty) == 3)
 					{
-						var tempGear:Gear = recycle(Gear) as Gear;
+						var tempGear:Gear = new Gear(tx*16, ty*16);
 						levelGears.add(tempGear);
 					}
 

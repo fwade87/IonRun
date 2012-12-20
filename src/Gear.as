@@ -9,7 +9,7 @@ package
 		public function Gear(X:int, Y:int)
 		{
 			super(X, Y, gearPNG);
-			solid = false;
+			solid = true;
 		}
 		
 	}

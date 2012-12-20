@@ -14,13 +14,14 @@ package
 		public var DOUBLEJUMP:Boolean;
 		private var SINGLEJUMP:Boolean;
 		private var jumpspeed:int = 200;
+		public var playerStats:FlxGroup;
 		
 		public function Player(x:Number, y:Number)
 		{
 			//	As this extends FlxSprite we need to call super() to ensure all of the parent variables we need are created
 			super(x, y);
 			start = new FlxPoint(x, y);
-		
+			playerStats = new FlxGroup;
 			//	Load the player.png into this sprite.
 			//	The 2nd parameter tells Flixel it's a sprite sheet and it should chop it up into 16x18 sized frames.
 			loadGraphic(playerPNG, true, true, 16, 18, true);
@@ -29,11 +30,13 @@ package
 			//	We also shave 2 pixels off each side to make it slip through gaps easier. Changing the width/height does NOT change the visual sprite, just the bounding box used for physics.
 			width = 16;
 			height = 16;
-			
+	
 			//player HP
 			health = 4;
-			playerHPbar = new FlxBar(x, y, FlxBar.FILL_LEFT_TO_RIGHT, 17, 4, this, "health", 0, 4, false);
-			playerHPbar.trackParent(0, -12);
+			playerHPbar = new FlxBar(x, y, FlxBar.FILL_LEFT_TO_RIGHT, 17, 5, this, "health", 0, 4, false);
+			playerHPbar.trackParent(0, -5);
+
+			playerStats.add(playerHPbar);
 			
 			//	The Animation sequences we need
 			addAnimation("idle", [0], 0, false);

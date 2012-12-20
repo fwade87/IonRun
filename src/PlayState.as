@@ -5,7 +5,6 @@ package
 	//**
 	//**
 	
-	import flash.sampler.NewObjectSample;
 	import org.flixel.*;
 	import org.flixel.plugin.photonstorm.FlxBar;
 	import org.flixel.plugin.photonstorm.FlxDelay;
@@ -29,6 +28,8 @@ package
 		//lvls
 		public var lvl1:Class = Level1;
 		public var lvl2:Class = Level2;
+		//set the stage counter at 0
+		public static var lvlCount:int = 0;
 		
 		//make an array out of the Class references of the stages
 		public static var lvls:Array;
@@ -42,9 +43,6 @@ package
 		
 		//gears
 		private var gear:Gear;
-		
-		//set the stage counter at 0
-		public static var lvlCount:int = 1;
 
 		//gibs
 		public var debris:Debris;
@@ -56,8 +54,6 @@ package
 		private var scrapHitFX:FlxSound;
 		private var playerhurtHitFX:FlxSound;
 
-
-		
 		//meta groups, to help speed up collisions
 		protected var _objects:FlxGroup;
 		protected var _hazards:FlxGroup;
@@ -147,6 +143,7 @@ package
 			//player
 			player = new Player(20, 60);
 			
+			
 			//	Tell flixel how big our game world is
 			FlxG.worldBounds = new FlxRect(0, 0, level.width, level.height);
 			//	Don't let the camera wander off the edges of the map
@@ -159,11 +156,11 @@ package
 			add(level.map);
 			add(level.slimes);
 			add(level.buzzers);
-			add(player.playerHPbar);
-			add(level.interact);
-			add(score);
+			add(player.playerStats);
+			add(level.levelGears);
+
 			add(scrapScore);
-			
+			add(score);
 			add(player);
 			
 			FlxG.camera.flash(0xff000000, 1, null, false);
@@ -286,7 +283,7 @@ package
 		}
 		
 		//GEARS
-		private function hitGear(player:FlxObject, gear:FlxGroup):void
+		private function hitGear(player:FlxObject, gear:FlxSprite):void
 		{
 			FlxG.log("GEAR HIT!");
 			gear.kill();
