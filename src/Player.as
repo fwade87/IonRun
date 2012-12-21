@@ -96,7 +96,7 @@ package
 				}
 			 
 			//This final 'if' statement is our mid-air, or double jump
-			if (FlxG.keys.justPressed("SPACE") && (velocity.y > 0 || velocity.y < 0) && DOUBLEJUMP && !onWall)
+			if (FlxG.keys.justPressed("SPACE") && velocity.y > 0 && DOUBLEJUMP && !onWall)
 				{
 				velocity.y = -jumpspeed/1.4;
 				DOUBLEJUMP = false;
@@ -119,7 +119,10 @@ package
 				FlxG.switchState(new PlayState);
 			}
 			
-		
+			if (!isTouching(WALL))
+			{
+				resetAcceleration();
+			}
 			
 			if (touching == FlxObject.FLOOR)
 			{
@@ -191,6 +194,11 @@ package
 			{
 				facing = LEFT;
 			}
+		}
+		
+		public function resetAcceleration():void
+		{
+			acceleration.y = 420;
 		}
 		
 	}
