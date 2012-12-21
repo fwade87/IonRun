@@ -22,11 +22,13 @@ package
 		public var slimes:Enemies;
 		public var buzzers:Enemies;
 		
-		//gears and elevators
+		//gears and interactive
 		public var levelGears:FlxGroup;
+		public var levelcWalls:FlxGroup;
 		private var elevator1:Elevator;
 		private var elevator2:Elevator;
-		public var totalGears:int;
+		private var elevator3:Elevator;
+		public var totalGears:uint;
 		
 		//deminsions
 		public var width:int;
@@ -47,6 +49,15 @@ package
 			//deminsions
 			setDimensions();
 			
+			elevator1 = new Elevator(26, 6, 10, 0);
+			elevator2 = new Elevator(82, 6, 0, 7);
+			elevator3 = new Elevator(42, 6, 0, 3);
+			
+			add(elevator1);
+			add(elevator2);
+			add(elevator3);
+			
+			totalGears = 0;
 			//enemies functions
 			if (skipMobs == false)
 			{
@@ -118,8 +129,8 @@ package
 			interact.loadMap(new interactCSV, registry.interactPNG, 16, 16,0,0,1,31);
 			
 			//initialize the interact element FlxGroups
-			levelGears = recycle(FlxGroup) as FlxGroup;
-	
+			levelGears =  new FlxGroup;
+			levelcWalls = new FlxGroup;
 			
 			//scan the y axis
 			for (var ty:int = 0; ty < interact.heightInTiles; ty++)
@@ -133,7 +144,17 @@ package
 					{
 						var tempGear:Gear = new Gear(tx*16, ty*16);
 						levelGears.add(tempGear);
+						
+						totalGears++;
 					}
+					
+					if (interact.getTile(tx, ty) == 4)
+					{
+						var tempConWall:ConWall = new ConWall(tx*16, ty*16);
+						levelcWalls.add(tempConWall);
+						
+					}
+
 
 				}
 			}

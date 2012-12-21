@@ -30,7 +30,6 @@ package
 			 emitter.makeParticles(bitsPNG, 10,16,true,1); 
 			 emitter.x = xa;
 			 emitter.y = ya;
-			 add(emitter);
 
 			emitter.start(true,1);
 			add(emitter);

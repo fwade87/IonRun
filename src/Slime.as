@@ -9,9 +9,10 @@ package
 	{
 		[Embed(source = '../assets/slime.png')] private var slimePNG:Class;
 
-		
-		public var isDying:Boolean = false;
+		public var level:BaseLevel;
 
+		public var isDying:Boolean = false;
+		
 		
 		public function Slime(x:int, y:int)
 		{
@@ -50,7 +51,25 @@ package
 		{
 			super.update();
 			
-
+			if (facing == FlxObject.LEFT && isTouching(WALL))
+			{
+					turnAround();
+					return;
+			}
+			else if (facing == FlxObject.RIGHT && isTouching(WALL))
+			{
+				{
+					turnAround();
+					return;
+				}
+			}
+			
+			//	Check the tiles below it
+			
+			if (isTouching(FlxObject.FLOOR) == false && isDying == false)
+			{
+				turnAround();
+			}
 		}
 		
 		private function turnAround():void

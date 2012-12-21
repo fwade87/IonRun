@@ -15,6 +15,8 @@ package
 		private var SINGLEJUMP:Boolean;
 		private var jumpspeed:int = 200;
 		public var playerStats:FlxGroup;
+		public var onWall:Boolean = false;
+		public var cWall:ConWall;
 		
 		public function Player(x:Number, y:Number)
 		{
@@ -33,16 +35,17 @@ package
 	
 			//player HP
 			health = 4;
-			playerHPbar = new FlxBar(x, y, FlxBar.FILL_LEFT_TO_RIGHT, 17, 5, this, "health", 0, 4, false);
-			playerHPbar.trackParent(0, -5);
+			playerHPbar = new FlxBar(x, y, FlxBar.FILL_LEFT_TO_RIGHT, 17, 8, this, "health", 0, 4, false);
+			playerHPbar.trackParent(0, -15);
 
 			playerStats.add(playerHPbar);
-			
+			onWall = false;
 			//	The Animation sequences we need
 			addAnimation("idle", [0], 0, false);
 			addAnimation("walk", [0, 1, 0, 2], 10, true);
 			addAnimation("jump", [1], 0, false);
 			addAnimation("hurt", [4], 0, false);
+			addAnimation("conWall", [5]);
 			
 			//	Enable the Controls plugin - you only need do this once (unless you destroy the plugin)
 			if (FlxG.getPlugin(FlxControl) == null)
@@ -77,7 +80,7 @@ package
 		{
 			super.update();
 			
-		//This first 'if' statement is our initial jump
+			//This first 'if' statement is our initial jump
 			if (FlxG.keys.justPressed("SPACE") && velocity.y == 0)
 				{
 				velocity.y = -jumpspeed;
@@ -93,7 +96,7 @@ package
 				}
 			 
 			//This final 'if' statement is our mid-air, or double jump
-			if (FlxG.keys.justPressed("SPACE") && (velocity.y > 0 || velocity.y < 0) && DOUBLEJUMP)
+			if (FlxG.keys.justPressed("SPACE") && (velocity.y > 0 || velocity.y < 0) && DOUBLEJUMP && !onWall)
 				{
 				velocity.y = -jumpspeed/1.4;
 				DOUBLEJUMP = false;
@@ -104,6 +107,10 @@ package
 			{
 				x = 0;
 			}
+			if (y < 5)
+			{
+				y = 5;
+			}
 			
 			//	Have they hit the water?
 			if (y > 268)
@@ -111,6 +118,8 @@ package
 				FlxG.fade(0xff000000, 2);
 				FlxG.switchState(new PlayState);
 			}
+			
+		
 			
 			if (touching == FlxObject.FLOOR)
 			{
@@ -126,6 +135,61 @@ package
 			else if (velocity.y < 0)
 			{
 				play("jump");
+			}
+			
+			//ConWall on wall
+			if (onWall)
+			{
+					if (!touching == cWall) 
+			{
+				velocity.y = 240;
+			}
+					if (FlxG.keys.justPressed("UP"))
+					{
+						velocity.x = maxVelocity.x * (facing == FlxObject.LEFT ? -1 : 1);
+						acceleration.y = 220;
+						onWall = false;
+					}
+					if (FlxG.keys.justPressed("DOWN"))
+					{
+						acceleration.y = 420;
+						onWall = false;
+						width = 14;
+						offset.x = 1;
+					}
+					if (FlxG.keys.justPressed("LEFT"))
+					{
+						acceleration.y = 420;
+
+						onWall = false;
+						width = 14;
+						offset.x = 1;
+					}
+					if (FlxG.keys.justPressed("RIGHT"))
+					{
+						acceleration.y = 420;
+
+						onWall = false;
+						width = 14;
+						offset.x = 1;
+					}
+			}
+		}
+		//called when the player touches a magwall
+		public function conwallContact():void
+		{
+
+			onWall = true;
+			acceleration.y = 0;
+			velocity.y = 0;
+		
+			if (isTouching(FlxObject.LEFT))
+			{
+				facing = RIGHT
+			}
+			if (isTouching(FlxObject.RIGHT))
+			{
+				facing = LEFT;
 			}
 		}
 		

@@ -21,8 +21,8 @@ package
 		[Embed(source = "../assets/drop1.png")] private var scrapPNG:Class;
 
 		//main game vars
-		private var player:Player;
-		private var level:BaseLevel;
+		public var player:Player;
+		public var level:BaseLevel;
 		public var registry:Registry;
 		
 		//lvls
@@ -41,8 +41,9 @@ package
 		private var _scrapDrops:FlxGroup;
 		private var scrap:FlxSprite;
 		
-		//gears
+		//interactive
 		private var gear:Gear;
+		private var cWall:ConWall;
 
 		//gibs
 		public var debris:Debris;
@@ -57,6 +58,7 @@ package
 		//meta groups, to help speed up collisions
 		protected var _objects:FlxGroup;
 		protected var _hazards:FlxGroup;
+		protected var _interact:FlxGroup;
 		
 		public function PlayState() 
 		{
@@ -68,7 +70,7 @@ package
 			FlxG.mouse.hide();
 			
 			lvls = [lvl1,lvl2];
-			makeStage();
+			
 			
 			//sound stuff
 			gearHitFX = new FlxSound;
@@ -88,34 +90,22 @@ package
 
 			
 			debris = new Debris;
-			//score stuff
-			score = new FlxText(0, 0, 100);
-			score.color = 0xffffffff;
-			score.shadow = 0xff000000;
-			score.scrollFactor.x = 0;
-			score.scrollFactor.y = 0;
-			score.text =  "0 / " + level.totalGears.toString() ;
+
 			
-			scrapScore = new FlxText(0, 20, 100);
-			scrapScore.color = 0xffffffff;
-			scrapScore.shadow = 0xff000000;
-			scrapScore.scrollFactor.x = 0;
-			scrapScore.scrollFactor.y = 0;
-			scrapScore.text = scrapTotal.toString();
-			
+			makeStage();
 			
 			//meta groups !
 			_hazards = new FlxGroup();
 			_hazards.add(level.slimes);
 			_hazards.add(level.buzzers);
-			
-			
+	
 			_objects = new FlxGroup();
-			
 			_objects.add(debris);
-			
 			_scrapDrops = new FlxGroup();
 			_objects.add(_scrapDrops);
+			
+			_interact = new FlxGroup();
+			_interact.add(cWall);
 			
 			
 		}
@@ -131,6 +121,7 @@ package
 			FlxG.overlap(player, level.buzzers, hitBuzzer);
 			FlxG.overlap(player, level.levelGears, hitGear);
 			FlxG.overlap(player, _scrapDrops, scrapHit);
+			FlxG.collide(player, level.levelcWalls, cwallHit);
 		}
 		
 		//generate the stage
@@ -143,7 +134,22 @@ package
 			//player
 			player = new Player(20, 60);
 			
+			//score stuff
+			score = new FlxText(0, 0, 100);
+			score.color = 0xffffffff;
+			score.shadow = 0xff000000;
+			score.scrollFactor.x = 0;
+			score.scrollFactor.y = 0;
+			score.text =  "0 / " + level.totalGears.toString();
 			
+			scrapScore = new FlxText(0, 20, 100);
+			scrapScore.color = 0xffffffff;
+			scrapScore.shadow = 0xff000000;
+			scrapScore.scrollFactor.x = 0;
+			scrapScore.scrollFactor.y = 0;
+			scrapScore.text = scrapTotal.toString();
+			
+			debris = new Debris;
 			//	Tell flixel how big our game world is
 			FlxG.worldBounds = new FlxRect(0, 0, level.width, level.height);
 			//	Don't let the camera wander off the edges of the map
@@ -152,13 +158,15 @@ package
 			FlxG.camera.follow(player, FlxCamera.STYLE_PLATFORMER);
 			
 			//add everything
-			add(debris);
+			
 			add(level.map);
 			add(level.slimes);
 			add(level.buzzers);
 			add(player.playerStats);
 			add(level.levelGears);
-
+			add(level.levelcWalls);
+			add(level.levelcWalls);
+			add(debris._explodes);
 			add(scrapScore);
 			add(score);
 			add(player);
@@ -302,6 +310,15 @@ package
 			{
 				score.text = FlxG.score.toString() + " / " + level.totalGears.toString();
 			}
+		}
+		
+		//CONDUCTIVE WALL HIT
+		public function cwallHit(player:Player, cWall:ConWall):void
+		{
+			
+			FlxG.log("cWall HIT!");
+			player.conwallContact();
+			
 		}
 		
 	}
