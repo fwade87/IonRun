@@ -143,16 +143,14 @@ package
 			//ConWall on wall
 			if (onWall)
 			{
-					if (!touching == cWall) 
-			{
-				velocity.y = 240;
-			}
-					if (FlxG.keys.justPressed("UP"))
+
+					if (FlxG.keys.justPressed("UP") )
 					{
 						velocity.x = maxVelocity.x * (facing == FlxObject.LEFT ? -1 : 1);
-						acceleration.y = 220;
-						onWall = false;
+						acceleration.y = 420;
+						
 					}
+					
 					if (FlxG.keys.justPressed("DOWN"))
 					{
 						acceleration.y = 420;
@@ -168,24 +166,28 @@ package
 						width = 14;
 						offset.x = 1;
 					}
-					if (FlxG.keys.justPressed("RIGHT"))
-					{
-						acceleration.y = 420;
-
-						onWall = false;
-						width = 14;
-						offset.x = 1;
-					}
+					if (FlxG.keys.justReleased("RIGHT"))
+						{
+							velocity.y = +150;
+							acceleration.x = 50;
+						}
+			
 			}
 		}
-		//called when the player touches a magwall
+		//called when the player touches a grabwall
 		public function conwallContact():void
 		{
-
-			onWall = true;
-			acceleration.y = 0;
+		if (FlxG.keys.pressed("RIGHT") || FlxG.keys.pressed("LEFT"))
+			{
+			acceleration.x = 0;
 			velocity.y = 0;
-		
+			}
+		if (FlxG.keys.pressed("RIGHT") && FlxG.keys.pressed("UP") || FlxG.keys.pressed("LEFT") && FlxG.keys.pressed("UP"))
+		{
+			acceleration.x = 0;
+			velocity.y = -480;
+		}
+			
 			if (isTouching(FlxObject.LEFT))
 			{
 				facing = RIGHT

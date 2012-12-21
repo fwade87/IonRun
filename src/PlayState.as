@@ -116,12 +116,13 @@ package
 			FlxG.collide(player, level);
 			FlxG.collide(_hazards, level);
 			FlxG.collide(_objects, level);
+			FlxG.collide(player, level.levelcWalls, cwallHit);
 			
 			FlxG.overlap(player,level.slimes, hitSlime);
 			FlxG.overlap(player, level.buzzers, hitBuzzer);
 			FlxG.overlap(player, level.levelGears, hitGear);
 			FlxG.overlap(player, _scrapDrops, scrapHit);
-			FlxG.collide(player, level.levelcWalls, cwallHit);
+			
 		}
 		
 		//generate the stage
